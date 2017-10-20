@@ -38,7 +38,7 @@ app.controller('GraphController', function($scope, GraphService) {
     $scope.graphData = [];
     $.ajax({url: "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&interval=60min&outputsize=full&symbol=" + $scope.ticker + "&apikey=U2SWZSWXTDD7DV1D", success: function(result){
         //console.log(result);
-        var maxData = 50;
+        var maxData = 63;
         var data = {x: [], y: [], type: 'scatter'};
         data.name = $scope.ticker + ' Closing Price';
 
