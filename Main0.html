@@ -1,0 +1,151 @@
+<div ng-app="app">
+    <div ng-controller="CalculatorController">
+        Enter a number:
+        <input type="number" ng-model="number" />
+        <button ng-click="doSquare()">X<sup>2</sup></button>
+        <button ng-click="doCube()">X<sup>3</sup></button>
+
+        <div>Answer: {{answer}}</div>
+    </div>
+
+
+</div>
+<div id="tester" style="width:100%;height:100%;"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="jquery.js"></script>
+
+
+<script>
+
+var graphData = [];
+
+//var alphaPull = require("./bin/alphavantagePull");
+
+
+$(window).load(function(){
+    TESTER = document.getElementById('tester');
+
+
+    var symbol = "MSFT";
+    var maxData = 50;
+
+
+    //getData(symbol, {time_period: 10, maxData: maxData}, loadGraph(TESTER, graphData));
+    //getData(symbol, {time_period: 10, maxData: maxData * 24}, loadGraph(TESTER, graphData));
+    //getData(symbol, {time_period: 3, maxData: maxData}, loadGraph(TESTER, graphData));
+    //getData(symbol, {time_period: 2, maxData: maxData}, loadGraph(TESTER, graphData));
+
+
+
+
+
+    $.ajax({url: "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&interval=60min&outputsize=full&symbol=" + symbol + "&apikey=U2SWZSWXTDD7DV1D", success: function(result){
+        console.log(result);
+        //["Technical Analysis: SMA"]["2000-01-14"].SMA
+        //var rawData = JSON.parse(result);
+        //console.log(rawData);
+
+        var data = {x: [], y: [], type: 'scatter'};
+        data.name = 'Closing Price';
+
+        Object.keys(result["Time Series (60min)"]).forEach(function (key) {
+            //console.log(key);
+
+            if(data.x.length > maxData * 24){
+                return;
+            }
+            data.x.push(key);
+            data.y.push(result["Time Series (60min)"][key]["4. close"]);
+            // do something with obj[key]
+        });
+
+        graphData.push(data);
+        console.log(data.x.length)
+        loadGraph(TESTER, graphData);
+        //for(var i = 0; )
+    }});
+
+
+
+
+    //Plotly.newPlot('myDiv', data);
+
+});
+
+function loadGraph(element, data){
+   Plotly.plot( element, data );
+}
+
+
+
+
+</script>
+
+<script>
+var app = angular.module('app', []);
+
+app.service('MathService', function() {
+  this.add = function(a, b) {
+    return a + b
+  };
+
+  this.subtract = function(a, b) {
+    return a - b
+  };
+
+  this.multiply = function(a, b) {
+    return a * b
+  };
+
+  this.divide = function(a, b) {
+    return a / b
+  };
+});
+
+app.service('CalculatorService', function(MathService) {
+
+  this.square = function(a) {
+    return MathService.multiply(a, a);
+  };
+  this.cube = function(a) {
+    return MathService.multiply(a, MathService.multiply(a, a));
+  };
+
+});
+
+app.controller('CalculatorController', function($scope, CalculatorService) {
+
+  $scope.doSquare = function() {
+    $scope.answer = CalculatorService.square($scope.number);
+  }
+
+  $scope.doCube = function() {
+    $scope.answer = CalculatorService.cube($scope.number);
+  }
+});
+
+app.service('GraphService', function() {
+
+  this.graph = function(a) {
+    return MathService.multiply(a, a);
+  };
+  this.cube = function(a) {
+    return MathService.multiply(a, MathService.multiply(a, a));
+  };
+
+});
+
+
+app.controller('GraphController', function($scope, GraphService) {
+
+  $scope.doSquare = function() {
+    $scope.answer = CalculatorService.square($scope.number);
+  }
+
+  $scope.doCube = function() {
+    $scope.answer = CalculatorService.cube($scope.number);
+  }
+});
+
+</script>
