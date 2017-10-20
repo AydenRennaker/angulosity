@@ -37,7 +37,7 @@ app.controller('GraphController', function($scope, GraphService) {
         //console.log(result);
         var maxData = 50;
         var data = {x: [], y: [], type: 'scatter'};
-        data.name = 'Closing Price';
+        data.name = $scope.ticker + ' Closing Price';
 
         Object.keys(result["Time Series (60min)"]).forEach(function (key) {
             //console.log(key);
