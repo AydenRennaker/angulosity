@@ -31,7 +31,7 @@ app.service('GraphService', function() {
 
 app.controller('GraphController', function($scope, GraphService) {
 
-  $scope.getData = function(){
+  $scope.getCloseData = function(){
     $scope.graphData = [];
     $.ajax({url: "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&interval=60min&outputsize=full&symbol=" + $scope.ticker + "&apikey=U2SWZSWXTDD7DV1D", success: function(result){
         //console.log(result);
@@ -54,6 +54,39 @@ app.controller('GraphController', function($scope, GraphService) {
         console.log(data.x.length)
         GraphService.graph($scope.graphData);
     }});
+
+  }
+
+  $scope.getSMAData = function(){
+    $scope.graphData = [];
+
+    $.ajax({url: "https://www.alphavantage.co/query?function=SMA&interval=60min&outputsize=full&series_type=close&time_period=10&symbol=" + $scope.ticker + "&apikey=U2SWZSWXTDD7DV1D", success: function(result){
+        //console.log(result);
+        var maxData = 50;
+        var data = {x: [], y: [], type: 'scatter'};
+        data.name = $scope.ticker + ' SMA';
+
+        Object.keys(result["Technical Analysis: SMA"]).forEach(function (key) {
+            //console.log(key);
+
+            if(data.x.length > maxData * 24){
+                return;
+            }
+            data.x.push(key);
+            data.y.push(result["Technical Analysis: SMA"][key]["SMA"]);
+            // do something with obj[key]
+        });
+
+        $scope.graphData.push(data);
+        console.log(data.x.length)
+        GraphService.graph($scope.graphData);
+    }});
+
+  }
+
+  $scope.getData = function(){
+    $scope.getCloseData();
+    $scope.getSMAData();
 
   }
 
