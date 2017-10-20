@@ -22,8 +22,10 @@ app.service('GraphService', function() {
 
   this.graph = function(data) {
     TESTER = document.getElementById('tester');
+    if(data.length == 2){
+      Plotly.plot( TESTER, data );
+    }
 
-    Plotly.plot( TESTER, data );
   };
 
 });
